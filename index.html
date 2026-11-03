@@ -81,7 +81,7 @@
                     <i class="fa-solid fa-pen-to-square"></i> تسجيل طفل جديد
                 </button>
                 <button onclick="switchTab('admin')" id="tab-admin" class="tab-btn text-gray-600 px-5 py-2 rounded-full font-bold text-sm transition-all flex items-center gap-2">
-                    <i class="fa-solid fa-user-shield"></i> لوحة الإدارة
+                    <i class="fa-solid fa-lock text-brand-pink"></i> لوحة الإدارة
                 </button>
             </nav>
         </div>
@@ -90,24 +90,32 @@
     <!-- المحتوى -->
     <main class="max-w-6xl mx-auto px-4 py-8 flex-grow relative z-10 w-full">
 
-        <!-- 1. بوابة ولي الأمر -->
+        <!-- 1. بوابة ولي الأمر (معلقة لحين تفعيل الإدارة) -->
         <section id="section-parent" class="space-y-6">
             <div class="bg-white p-6 rounded-3xl shadow-sm border border-pink-100 flex flex-col md:flex-row items-center justify-between gap-4">
                 <div>
                     <h2 class="text-xl font-extrabold text-brand-blue flex items-center gap-2">
                         <i class="fa-solid fa-child-circle-check text-brand-pink"></i> متابعة بيانات الطفل والمستوى الدراسي
                     </h2>
-                    <p class="text-sm text-gray-500">أدخل كود الطالب لمتابعة التقدم والاشتراكات وملاحظات المعلمين</p>
+                    <p class="text-sm text-gray-500">أدخل كود الطالب الخاص بك (لن يفتح الحساب إلا بعد موافقة وتفعيل الإدارة)</p>
                 </div>
                 <div class="flex items-center gap-2 w-full md:w-auto">
-                    <input type="text" id="studentCodeInput" placeholder="أدخل كود الطفل (مثال: TAL-101)" class="w-full md:w-64 px-4 py-2.5 rounded-xl border border-pink-200 focus:outline-none focus:ring-2 focus:ring-brand-pink text-sm font-bold">
+                    <input type="text" id="studentCodeInput" placeholder="أدخل كود الطالب (مثال: TAL-101)" class="w-full md:w-64 px-4 py-2.5 rounded-xl border border-pink-200 focus:outline-none focus:ring-2 focus:ring-brand-pink text-sm font-bold">
                     <button onclick="searchStudent()" class="bg-brand-pink hover:bg-brand-pinkDark text-white px-5 py-2.5 rounded-xl font-bold text-sm transition-all shadow-md shrink-0">
-                        بحث
+                        بحث ودخول
                     </button>
                 </div>
             </div>
 
-            <div id="studentProfileCard" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- رسالة التنبيه أو الكارت المخفي لحين التفعيل -->
+            <div id="pendingNoticeBox" class="bg-amber-50 border border-amber-200 rounded-3xl p-8 text-center space-y-3">
+                <i class="fa-solid fa-hourglass-half text-4xl text-amber-500 animate-pulse"></i>
+                <h3 class="text-lg font-black text-amber-800">الحساب بانتظار تفعيل وموافقة الإدارة</h3>
+                <p class="text-xs text-amber-700 max-w-md mx-auto">عزيزي ولي الأمر، لا يمكن استعراض محتوى صفحة ولي الأمر أو التقارير إلا بعد مراجعة بيانات طفلك وتأكيد التسجيل من قِبل الإدارة. يُرجى إدخال الكود بعد التفعيل.</p>
+            </div>
+
+            <!-- كارت الطالب الفعلي (يظهر فقط إذا كان مفعلاً من الإدارة) -->
+            <div id="studentProfileCard" class="hidden grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="bg-white p-6 rounded-3xl shadow-sm border border-pink-100 text-center flex flex-col items-center">
                     <div class="relative mb-4">
                         <div class="w-32 h-32 rounded-full bg-pink-50 border-4 border-brand-pink flex items-center justify-center overflow-hidden shadow-inner">
@@ -118,37 +126,35 @@
                         </label>
                         <input type="file" id="childPhotoUpload" class="hidden" accept="image/*" onchange="uploadChildPhoto(event)">
                     </div>
-                    <h3 id="displayChildName" class="text-2xl font-black text-gray-800">أحمد محمود علي</h3>
-                    <p id="displayStudentCode" class="text-xs font-bold text-brand-blue bg-blue-50 px-3 py-1 rounded-full mt-1">كود الطالب: TAL-101</p>
+                    <h3 id="displayChildName" class="text-2xl font-black text-gray-800">---</h3>
+                    <p id="displayStudentCode" class="text-xs font-bold text-brand-blue bg-blue-50 px-3 py-1 rounded-full mt-1">كود الطالب: ---</p>
                     
                     <div class="w-full mt-6 pt-6 border-t border-gray-100 text-right space-y-3 text-sm">
-                        <p class="flex justify-between"><span class="text-gray-500 font-bold">تاريخ الميلاد:</span> <span id="displayBirthDate" class="font-bold">2021-05-12</span></p>
-                        <p class="flex justify-between"><span class="text-gray-500 font-bold">ولي الأمر:</span> <span id="displayGuardian" class="font-bold">محمود علي</span></p>
-                        <p class="flex justify-between"><span class="text-gray-500 font-bold">منطقة الباص:</span> <span id="displayBusArea" class="font-bold text-green-600">البيضا البلد (300 ج.م)</span></p>
+                        <p class="flex justify-between"><span class="text-gray-500 font-bold">تاريخ الميلاد:</span> <span id="displayBirthDate" class="font-bold">---</span></p>
+                        <p class="flex justify-between"><span class="text-gray-500 font-bold">ولي الأمر:</span> <span id="displayGuardian" class="font-bold">---</span></p>
+                        <p class="flex justify-between"><span class="text-gray-500 font-bold">منطقة الباص:</span> <span id="displayBusArea" class="font-bold text-green-600">---</span></p>
                     </div>
                 </div>
 
                 <div class="lg:col-span-2 space-y-6">
-                    <!-- التنبيه والمستوى -->
                     <div class="bg-white p-6 rounded-3xl shadow-sm border border-pink-100 space-y-4">
                         <div class="flex items-center justify-between border-b pb-4">
                             <h4 class="font-extrabold text-lg text-brand-blue flex items-center gap-2">
                                 <i class="fa-solid fa-star text-brand-gold"></i> التقييم والمستوى المحدد من الإدارة
                             </h4>
-                            <span id="displayLevelBadge" class="bg-emerald-100 text-emerald-800 text-xs px-3 py-1 rounded-full font-extrabold">ممتاز ⭐</span>
+                            <span id="displayLevelBadge" class="bg-emerald-100 text-emerald-800 text-xs px-3 py-1 rounded-full font-extrabold">---</span>
                         </div>
                         <div>
-                            <p class="text-xs text-gray-500 font-bold mb-1">ملاحظات الإدارة والمعلمين المحدثة:</p>
+                            <p class="text-xs text-gray-500 font-bold mb-1">ملاحظات الإدارة والمعلمين:</p>
                             <div id="displayTeacherNotes" class="p-4 bg-pink-50/50 rounded-2xl border border-pink-100 text-sm font-semibold text-gray-700">
-                                الطفل مشارك وممتاز في الأنشطة اليومية وحفظ القرآن الكريم.
+                                ---
                             </div>
                         </div>
                     </div>
 
-                    <!-- سداد الاشتراك -->
                     <div id="paymentSection" class="bg-white p-6 rounded-3xl shadow-sm border border-pink-100">
                         <h4 class="font-extrabold text-lg text-brand-pink mb-2 flex items-center gap-2">
-                            <i class="fa-solid fa-wallet"></i> تفاصيل وسداد الاشتراكات (محفظة كاش: 01287666213)
+                            <i class="fa-solid fa-wallet"></i> سداد الاشتراكات (محفظة كاش: 01287666213)
                         </h4>
                         <p class="text-xs text-gray-500 mb-4">اشتراك الحضانة الأساسي 300 ج.م + قيمة الباص حسب منطقتك المختارة:</p>
 
@@ -207,7 +213,6 @@
                         </div>
                     </div>
 
-                    <!-- اختيار منطقة الباص والاشتراكات المحددة -->
                     <div>
                         <label class="block text-xs font-bold text-brand-blue mb-1">اختر منطقة الباص واشتراكه (إجباري) *</label>
                         <select id="regBusArea" class="w-full px-4 py-2.5 rounded-xl border border-blue-200 text-sm font-bold bg-blue-50/50">
@@ -227,15 +232,15 @@
             </div>
         </section>
 
-        <!-- 3. لوحة تحكم الإدارة (تعديل، حذف، تحديد المستوى، والملاحظات) -->
+        <!-- 3. لوحة تحكم الإدارة (محمية بباسورد) -->
         <section id="section-admin" class="hidden space-y-6">
             <div class="bg-white p-6 rounded-3xl shadow-sm border border-pink-100">
                 <div class="flex flex-col md:flex-row items-center justify-between gap-4 mb-6">
                     <div>
                         <h2 class="text-xl font-black text-brand-blue flex items-center gap-2">
-                            <i class="fa-solid fa-user-gear text-brand-pink"></i> لوحة الإدارة (تعديل، حذف، تقييم وملاحظات)
+                            <i class="fa-solid fa-lock text-brand-pink"></i> لوحة الإدارة (تأكيد الحسابات، التعديل، والحذف)
                         </h2>
-                        <p class="text-xs text-gray-500">التحكم الكامل في سجلات الطلاب، تغيير مستوياتهم، وكتابة ملاحظاتهم</p>
+                        <p class="text-xs text-gray-500">قم بتفعيل حسابات الطلاب الجدد، تعديل أسمائهم، تحديد المستويات، وكتابة الملاحظات</p>
                     </div>
                     <button onclick="exportAllClientsToCSV()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl text-xs font-black transition-all flex items-center gap-2 shadow-sm">
                         <i class="fa-solid fa-file-excel text-base"></i> تصدير البيانات (Excel/CSV)
@@ -250,9 +255,10 @@
                                 <th class="p-3">اسم الطفل</th>
                                 <th class="p-3">ولي الأمر</th>
                                 <th class="p-3">منطقة الباص</th>
-                                <th class="p-3">المستوى الدراسي</th>
-                                <th class="p-3">ملاحظات الإدارة</th>
-                                <th class="p-3 text-center">إجراءات الإدارة</th>
+                                <th class="p-3">حالة التفعيل</th>
+                                <th class="p-3">المستوى</th>
+                                <th class="p-3">الملاحظات</th>
+                                <th class="p-3 text-center">الإجراءات</th>
                             </tr>
                         </thead>
                         <tbody id="adminStudentsTable" class="divide-y divide-gray-100 font-semibold"></tbody>
@@ -271,20 +277,23 @@
     </footer>
 
     <script>
-        let studentsData = [
-            {
-                code: "TAL-101",
-                name: "أحمد محمود علي",
-                birthDate: "2021-05-12",
-                guardian: "محمود علي",
-                phone: "01113028718",
-                busArea: "البيضا البلد (300 ج.م)",
-                level: "ممتاز ⭐",
-                notes: "الطفل مشارك وممتاز في الأنشطة اليومية."
-            }
-        ];
+        const ADMIN_PASSWORD = "mssm681981";
+        let isAdminLoggedIn = false;
+
+        // مصفوفة العملاء تبدأ فارغة تماماً بدون أي أمثلة وهمية
+        let studentsData = [];
 
         function switchTab(tab) {
+            if (tab === 'admin' && !isAdminLoggedIn) {
+                const pass = prompt("أدخل كلمة مرور الإدارة لدخول اللوحة:");
+                if (pass === ADMIN_PASSWORD) {
+                    isAdminLoggedIn = true;
+                } else {
+                    alert("كلمة المرور غير صحيحة!");
+                    return;
+                }
+            }
+
             document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
             document.querySelectorAll('.tab-btn').forEach(b => {
                 b.classList.remove('active');
@@ -304,8 +313,9 @@
             const guardian = document.getElementById('regGuardian').value;
             const phone = document.getElementById('regPhone').value;
             const busArea = document.getElementById('regBusArea').value;
-            const newCode = "TAL-" + (studentsData.length + 101);
+            const newCode = "TAL-" + (101 + studentsData.length);
             
+            // إضافة الطالب في حالة غير مفعلة (معلق لحين تأكيد الإدارة)
             studentsData.push({
                 code: newCode,
                 name: childName,
@@ -313,22 +323,36 @@
                 guardian: guardian,
                 phone: phone,
                 busArea: busArea,
+                active: false, // معلق لحين موافقة الإدارة
                 level: "جيد جداً 👍",
-                notes: "تم التسجيل حديثاً."
+                notes: "في انتظار تأكيد الإدارة وتفعيل الحساب."
             });
 
-            const msg = `تسجيل جديد - حضانة طلائع الإيمان%0Aالاسم: ${childName}%0Aالكود: ${newCode}%0Aالباص والمنطقة: ${busArea}`;
+            const msg = `تسجيل جديد - حضانة طلائع الإيمان%0Aالاسم: ${childName}%0Aالكود المولد: ${newCode}%0Aالباص: ${busArea}`;
             window.open(`https://wa.me/201287666213?text=${msg}`, '_blank');
-            alert(`تم التسجيل بنجاح! كود الطالب: ${newCode}`);
-            switchTab('parent');
-            document.getElementById('studentCodeInput').value = newCode;
-            searchStudent();
+            alert(`تم إرسال طلب التسجيل بنجاح! كود الطالب الخاص بك هو: ${newCode}\n\nملاحظة: لن يتم فتح صفحة ولي الأمر إلا بعد أن تؤكد الإدارة تفعيل الحساب.`);
+            switchTab('admin'); // الانتقال للوحة الإدارة لتشاهده فوراً
         }
 
         function searchStudent() {
             const code = document.getElementById('studentCodeInput').value.trim();
             const student = studentsData.find(s => s.code.toLowerCase() === code.toLowerCase());
+            
+            const profileCard = document.getElementById('studentProfileCard');
+            const noticeBox = document.getElementById('pendingNoticeBox');
+
             if (student) {
+                if (!student.active) {
+                    profileCard.classList.add('hidden');
+                    noticeBox.classList.remove('hidden');
+                    alert("عذراً، هذا الحساب قيد المراجعة ومعلق لحين تأكيد وتفعيل الإدارة.");
+                    return;
+                }
+
+                // إذا كان مفعلاً يظهر الكارت وتختفي رسالة التعليق
+                noticeBox.classList.add('hidden');
+                profileCard.classList.remove('hidden');
+
                 document.getElementById('displayChildName').innerText = student.name;
                 document.getElementById('displayStudentCode').innerText = "كود الطالب: " + student.code;
                 document.getElementById('displayBirthDate').innerText = student.birthDate;
@@ -337,13 +361,21 @@
                 document.getElementById('displayLevelBadge').innerText = student.level;
                 document.getElementById('displayTeacherNotes').innerText = student.notes;
             } else {
-                alert("لم يتم العثور على طالب بهذا الكود!");
+                alert("لم يتم العثور على طالب بهذا الكود! تأكد من الرقم أو قم بالتسجيل أولاً.");
+                profileCard.classList.add('hidden');
+                noticeBox.classList.remove('hidden');
             }
         }
 
         function renderAdminTable() {
             const tbody = document.getElementById('adminStudentsTable');
             tbody.innerHTML = '';
+            
+            if (studentsData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" class="text-center py-6 text-gray-400 font-bold">لا توجد أي طلبات تسسجيل حالياً</td></tr>`;
+                return;
+            }
+
             studentsData.forEach(s => {
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-pink-50/45 transition-all";
@@ -352,6 +384,11 @@
                     <td class="p-3 font-black text-gray-800"><input type="text" value="${s.name}" onchange="updateStudentName('${s.code}', this.value)" class="border rounded px-2 py-1 w-full bg-gray-50"></td>
                     <td class="p-3">${s.guardian}</td>
                     <td class="p-3 text-xs text-gray-600">${s.busArea}</td>
+                    <td class="p-3">
+                        <button onclick="toggleActiveStatus('${s.code}')" class="px-3 py-1 rounded-full text-[11px] font-extrabold ${s.active ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
+                            ${s.active ? 'مفعل ✓' : 'معلق (اضغط للتفعيل)'}
+                        </button>
+                    </td>
                     <td class="p-3">
                         <select onchange="updateStudentLevel('${s.code}', this.value)" class="border rounded px-2 py-1 text-xs font-bold bg-white">
                             <option ${s.level.includes('ممتاز')?'selected':''}>ممتاز ⭐</option>
@@ -362,7 +399,7 @@
                     <td class="p-3">
                         <input type="text" value="${s.notes}" onchange="updateStudentNotes('${s.code}', this.value)" class="border rounded px-2 py-1 w-full text-xs bg-gray-50">
                     </td>
-                    <td class="p-3 text-center">
+                    <td class="p-3 text-center space-x-1 space-x-reverse">
                         <button onclick="deleteStudent('${s.code}')" class="bg-red-100 hover:bg-red-200 text-red-700 px-2.5 py-1 rounded-lg text-[11px] font-bold">
                             <i class="fa-solid fa-trash"></i> حذف
                         </button>
@@ -370,6 +407,15 @@
                 `;
                 tbody.appendChild(tr);
             });
+        }
+
+        function toggleActiveStatus(code) {
+            const s = studentsData.find(st => st.code === code);
+            if(s) {
+                s.active = !s.active;
+                renderAdminTable();
+                alert(s.active ? "تم تفعيل حساب الطالب بنجاح! أصبح بإمكانه الدخول." : "تم تعليق الحساب.");
+            }
         }
 
         function updateStudentName(code, newName) {
@@ -407,9 +453,9 @@
 
         function exportAllClientsToCSV() {
             let csvContent = "\uFEFF";
-            csvContent += "الكود,اسم الطفل,ولي الأمر,منطقة الباص,المستوى,الملاحظات\n";
+            csvContent += "الكود,اسم الطفل,ولي الأمر,منطقة الباص,الحالة,المستوى,الملاحظات\n";
             studentsData.forEach(s => {
-                csvContent += `"${s.code}","${s.name}","${s.guardian}","${s.busArea}","${s.level}","${s.notes}"\n`;
+                csvContent += `"${s.code}","${s.name}","${s.guardian}","${s.busArea}","${s.active ? 'مفعل' : 'معلق'}","${s.level}","${s.notes}"\n`;
             });
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
             const url = URL.createObjectURL(blob);
